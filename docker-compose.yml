@@ -1,0 +1,37 @@
+version: '3.9'
+
+services:
+  016-labs-todo-app:
+    container_name: 016-labs-todo-app
+    build: .
+    ports:
+      - 3000:3000
+    environment:
+      - NODE_ENV=dev
+      - JWT_SECRET=51654dc51e229c0c95200ba8
+      - REFRESH_SECRET=51654dc51e229c0c95200ba8
+      - COOKIE_SECRET=asdijfn23oq8pu54rqv
+      - LOG_LEVEL=info
+      - PORT=3000
+      - TOKEN_EXPIRES_DURATION_IN_MINUTES_FOR_USER=60
+      - CACHE_EXPIRES_DURATION_IN_MINUTES=60
+      - REFRESH_EXPIRES_DURATION_IN_YEARS=1
+      - DATABASE_TYPE=postgres
+      - O16_LABS_DATABASE_URL=postgres://user:password@postgres:5432/db
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+  db:
+    container_name: db
+    image: postgres:12
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata: {}
