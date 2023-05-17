@@ -15,7 +15,7 @@ export function createDocument(app: INestApplication): OpenAPIObject {
     .setDescription(SWAGGER_CONFIG.description).addApiKey({
       type: 'apiKey',
       in: 'cookie',
-      name: 'access-token', // Specify the name of the cookie used for authentication
+      name: TokenEnum.ACCESS, // Specify the name of the cookie used for authentication
     }).setVersion(SWAGGER_CONFIG.version);
   for (const tag of SWAGGER_CONFIG.tags) {
     builder.addTag(tag);
