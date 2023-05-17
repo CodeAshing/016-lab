@@ -63,21 +63,10 @@ const logger = new Logger('main');
   const configService = app.get(ConfigService);
 
   const config = new DocumentBuilder()
-    .setTitle('ERP Application')
-    .setDescription('ERP API Application')
+    .setTitle('016 Lab APIs')
+    .setDescription('016 Lab Application as a task')
     .setVersion('v1')
-    .addTag('Development')
-    .addBearerAuth(
-      {
-        type: 'http',
-        scheme: 'bearer',
-        bearerFormat: 'JWT',
-        name: 'JWT',
-        description: 'Enter JWT token',
-        in: 'header',
-      },
-      'JWT-auth', // This name here is important for matching up with @ApiBearerAuth() in your controller!
-    )
+    // .addTag('Development')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

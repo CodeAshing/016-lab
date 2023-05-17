@@ -4,6 +4,7 @@ import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 import { SWAGGER_CONFIG } from './swagger.config';
 import { TokenEnum } from 'src/app/auth/enum';
 
+
 /**
  * Creates an OpenAPI document for an application, via swagger.
  * @param app the nestjs application
@@ -12,11 +13,11 @@ import { TokenEnum } from 'src/app/auth/enum';
 export function createDocument(app: INestApplication): OpenAPIObject {
   const builder = new DocumentBuilder()
     .setTitle(SWAGGER_CONFIG.title)
-    .setDescription(SWAGGER_CONFIG.description).addApiKey({
-      type: 'apiKey',
-      in: 'cookie',
-      name: TokenEnum.ACCESS, // Specify the name of the cookie used for authentication
-    }).setVersion(SWAGGER_CONFIG.version);
+    .setDescription(SWAGGER_CONFIG.description)
+    .addBearerAuth(
+      { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+      'access-token',
+    ).setVersion(SWAGGER_CONFIG.version);
   for (const tag of SWAGGER_CONFIG.tags) {
     builder.addTag(tag);
   }
