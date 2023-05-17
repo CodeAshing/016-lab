@@ -11,6 +11,9 @@ import { ScheduleModule } from '@nestjs/schedule';
 
 //--- imports ---
 
+    // AuthModule,
+    // UsersModule,
+    // PostModule,
 
 //--- modules ---
 import {
@@ -34,12 +37,9 @@ import { LoggerModule } from './logger/logger.module';
       isGlobal: true,
     }),
     // --- Connections ---
-    DatabaseModule.forRoot(),
+    // DatabaseModule.forRoot(),
 
     // --- Modules ---
-    AuthModule,
-    UsersModule,
-    PostModule,
   ],
   controllers: [AppController],
   providers: [AppService],

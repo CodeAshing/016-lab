@@ -53,7 +53,7 @@ export class AuthService {
     response: Response,
     payload: loginDTO,
   ): Promise<any> {
-    this.logger.log('Hits 'ogin() Method');
+    this.logger.log('Hits login() Method');
     const { username, password } = payload;
 
     //filter results
