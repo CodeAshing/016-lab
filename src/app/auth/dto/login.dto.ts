@@ -1,15 +1,13 @@
-import { IsNotEmpty } from '@nestjs/class-validator';
+import { IsNotEmpty, IsString } from '@nestjs/class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class loginDTO {
-  @IsNotEmpty({ message: 'Please provide username' })
-  @ApiProperty({ description: 'Username', example: '07030016' })
-  username: string;
+  @IsNotEmpty()
+  @IsString()
+  @ApiProperty({ description: 'username or email', example: 'asharib90' })
+  userNameOrEmail: string;
 
-  @IsNotEmpty({ message: 'Please provide password' })
+  @IsNotEmpty()
   @ApiProperty({ description: 'Password', example: '123456' })
-  //   @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
-  //     message: 'Password is too weak',
-  //   })
   password: string;
 }

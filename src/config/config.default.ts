@@ -1,7 +1,7 @@
 import { ConfigData } from './config.interface';
 
 export const DEFAULT_CONFIG: ConfigData = {
-  databaseType: 'postgres',
+
   env: 'development',
   port: 3000,
   logLevel: 'info',
@@ -9,8 +9,13 @@ export const DEFAULT_CONFIG: ConfigData = {
   refreshSecret: 'random string',
   cookieSecret: 'random string',
   transactionSecret: 'random string',
-  o16labsDatabaseURI: undefined,
-  tokenExpiresDurationInMinutesForClient: 60,
+  tokenExpiresDurationInMinutesForUser: 60,
   cacheExpiresDurationInMinutes: 60,
   refreshExpiresDurationInYears: 1,
+  o16LabsDatabaseType: 'postgres',
+  o16LabsDatabaseHost: 'db',
+  o16LabsDatabaseUsername: 'postgres',
+  o16LabsDatabasePassword: 'postgres',
+  o16LabsDatabase: 'postgres',
+  o16LabsDatabasePort: 5432,
 };

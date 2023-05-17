@@ -1,13 +1,8 @@
 import {
   IsEmail,
   IsNotEmpty,
-  IsOptional,
-  ValidateNested,
 } from '@nestjs/class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import { IsArrayOfObjects } from 'src/app/common/decorator';
-import { NextToKinDTO } from '.';
 
 export class CreateClientDTO {
   @IsNotEmpty({ message: 'Please provide valid name' })
@@ -63,10 +58,4 @@ export class CreateClientDTO {
   @ApiProperty({ example: 'Sindh' })
   state: string;
 
-  @IsOptional({ message: 'Please provide valid NestToKin' })
-  @Type(() => NextToKinDTO)
-  @ValidateNested()
-  @IsArrayOfObjects()
-  @ApiProperty({ type: [NextToKinDTO] })
-  nextToKin: NextToKinDTO[];
 }

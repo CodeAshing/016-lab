@@ -10,7 +10,7 @@ import { Cache } from 'cache-manager';
 import { PassportStrategy } from '@nestjs/passport';
 import { ConfigService } from 'src/config/config.service';
 import { Strategy } from 'passport-jwt';
-import { responseEnum } from '../enum';
+import { TokenEnum, responseEnum } from '../enum';
 
 @Injectable()
 export class RefreshTokenStrategy extends PassportStrategy(
@@ -24,7 +24,7 @@ export class RefreshTokenStrategy extends PassportStrategy(
     private authService: AuthService,
   ) {
     super({
-      jwtFromRequest: (request: any) => request.headers['refresh-token'],
+      jwtFromRequest: (request: any) => request?.signedCookies[TokenEnum.REFRESH],
       ignoreExpiration: false,
       maxAge: '7d',
       passReqToCallback: true,
@@ -35,7 +35,7 @@ export class RefreshTokenStrategy extends PassportStrategy(
   async validate(request: any, payload: any) {
     if (!payload) throw new UnauthorizedException(responseEnum.NOT_AUTHORIZED);
 
-    const token = request.headers['refresh-token'];
+    const token = request?.signedCookies[TokenEnum.REFRESH];
     if (!token) throw new UnauthorizedException(responseEnum.NOT_AUTHORIZED);
 
     const addToCache = async (key: any, value: string) => {
@@ -59,25 +59,15 @@ export class RefreshTokenStrategy extends PassportStrategy(
       });
     };
 
-    switch (payload.user) {
-      case RoleEnum.EMPLOYEE: {
-        const data = await this.authService.validateEmployeeToken(
-          token,
-          payload,
-        );
+    const data = await this.authService.validateUserToken(
+      token,
+      payload,
+    );
+    if (!data) throw new UnauthorizedException(responseEnum.NOT_AUTHORIZED);
 
-        if (!data) throw new UnauthorizedException(responseEnum.NOT_AUTHORIZED);
+    await addToCache(payload.employeeCode, token);
+    return data
 
-        await addToCache(payload.employeeCode, token);
-        return data;
-      }
-      case RoleEnum.CLIENT: {
-        const data = await this.authService.validateClientToken(token, payload);
-        if (!data) throw new UnauthorizedException(responseEnum.NOT_AUTHORIZED);
 
-        await addToCache(payload.employeeCode, token);
-        return data;
-      }
-    }
   }
 }

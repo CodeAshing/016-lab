@@ -1,5 +1,4 @@
 import { IsNotEmpty } from '@nestjs/class-validator';
-import * as mongoose from 'mongoose';
 
 export class groupClientSaleDetailsDTODTO {
   @IsNotEmpty({ message: 'Please provide valid cnic' })
@@ -14,7 +13,3 @@ export class authoritySaleDetailsDTO {
   token: string;
 }
 
-export class clientTokenDTO {
-  @IsNotEmpty()
-  tokenId: mongoose.Types.ObjectId;
-}
