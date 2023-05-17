@@ -14,13 +14,18 @@ import { GetUser, ResponseMessage } from '../common/decorator';
 import { AuthService } from './auth.service';
 import { loginDTO, registerDTO } from './dto';
 import { JwtGuard, RefreshTokenGuard } from './guard';
-import { ApiResponse, ApiTags, ApiCookieAuth, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import {
+  ApiResponse,
+  ApiTags,
+  ApiCookieAuth,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { responseEnum } from './enum';
 
 @Controller('auth')
 @ApiTags('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) { }
+  constructor(private readonly authService: AuthService) {}
 
   @Post('register')
   @ResponseMessage(responseEnum.REGISTER_SUCCESSFULLY)
@@ -44,9 +49,7 @@ export class AuthController {
     },
   })
   @HttpCode(200)
-  async register(
-    @Body() body: registerDTO,
-  ): Promise<any> {
+  async register(@Body() body: registerDTO): Promise<any> {
     return await this.authService.register(body);
   }
 
@@ -56,9 +59,7 @@ export class AuthController {
     status: 200,
     description: responseEnum.LOGIN_SUCCESSFULLY,
   })
-
   @ApiUnauthorizedResponse({
-
     status: 401,
     description: responseEnum.INVALID_CREDENTIAL,
   })
@@ -79,10 +80,12 @@ export class AuthController {
   })
   @Get('refresh-token')
   @HttpCode(200)
-  async tokenRefresh(@GetUser() userData: any, @Res({ passthrough: true }) response: Response): Promise<any> {
+  async tokenRefresh(
+    @GetUser() userData: any,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<any> {
     return await this.authService.tokenRefresh(userData, response);
   }
-
 
   @UseGuards(JwtGuard)
   @ApiCookieAuth()

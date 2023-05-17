@@ -5,13 +5,10 @@ import { PostService } from './post.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PostEntity } from './schema';
 
-
 @Module({
-  imports: [TypeOrmModule.forFeature([PostEntity])
-
-  ],
+  imports: [TypeOrmModule.forFeature([PostEntity])],
   exports: [PostModule],
   controllers: [PostController],
   providers: [PostService],
 })
-export class PostModule { }
+export class PostModule {}

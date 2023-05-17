@@ -64,8 +64,6 @@ export class Helper {
     });
   }
 
-
-
   async generateHash(password: string): Promise<string> {
     const saltOrRounds = 10;
     return bcrypt.hash(password, saltOrRounds);
@@ -74,5 +72,4 @@ export class Helper {
   async compareHash(password: string, hash: string): Promise<boolean> {
     return bcrypt.compare(password, hash);
   }
-
 }

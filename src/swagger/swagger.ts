@@ -4,7 +4,6 @@ import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 import { SWAGGER_CONFIG } from './swagger.config';
 import { TokenEnum } from 'src/app/auth/enum';
 
-
 /**
  * Creates an OpenAPI document for an application, via swagger.
  * @param app the nestjs application
@@ -17,7 +16,8 @@ export function createDocument(app: INestApplication): OpenAPIObject {
     .addBearerAuth(
       { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
       'access-token',
-    ).setVersion(SWAGGER_CONFIG.version);
+    )
+    .setVersion(SWAGGER_CONFIG.version);
   for (const tag of SWAGGER_CONFIG.tags) {
     builder.addTag(tag);
   }

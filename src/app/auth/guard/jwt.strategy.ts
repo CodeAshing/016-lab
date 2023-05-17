@@ -28,12 +28,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     const token = request?.signedCookies[TokenEnum.ACCESS];
 
-    const data = await this.authService.validateUserToken(
-      token,
-      payload,
-    );
+    const data = await this.authService.validateUserToken(token, payload);
     if (!data) throw new UnauthorizedException(responseEnum.NOT_AUTHORIZED);
 
-    return data
+    return data;
   }
 }

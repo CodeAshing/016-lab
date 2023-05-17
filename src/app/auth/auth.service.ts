@@ -34,21 +34,17 @@ export class AuthService {
     private jwt: JwtService,
 
     private readonly usersService: UsersService,
-    @Inject(CACHE_MANAGER) private cacheManager: Cache
-  ) { }
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+  ) {}
 
-  async login(
-    response: Response,
-    payload: loginDTO,
-  ): Promise<null> {
+  async login(response: Response, payload: loginDTO): Promise<null> {
     this.logger.log('Hits login service');
     const { userNameOrEmail, password } = payload;
 
     const user = await this.usersService.getUserForLogin(userNameOrEmail);
 
     //check if user exists
-    if (!user)
-      throw new UnauthorizedException(responseEnum.INVALID_CREDENTIAL);
+    if (!user) throw new UnauthorizedException(responseEnum.INVALID_CREDENTIAL);
 
     const isMatched = await this.helper.compareHash(password, user.password);
 
@@ -87,7 +83,10 @@ export class AuthService {
       secure: false,
       httpOnly: true,
       expires: new Date(
-        Number(new Date()) + Number(this.config.get().tokenExpiresDurationInMinutesForUser) * 60 * 1000,
+        Number(new Date()) +
+          Number(this.config.get().tokenExpiresDurationInMinutesForUser) *
+            60 *
+            1000,
       ),
       signed: true,
       // secret: this.config.get().cookieSecret,
@@ -97,18 +96,21 @@ export class AuthService {
       secure: false,
       httpOnly: true,
       expires: new Date(
-        Number(new Date()) + Number(this.config.get().refreshExpiresDurationInYears) * 365 * 24 * 60 * 60 * 1000,
+        Number(new Date()) +
+          Number(this.config.get().refreshExpiresDurationInYears) *
+            365 *
+            24 *
+            60 *
+            60 *
+            1000,
       ),
       signed: true,
       // secret: this.config.get().cookieSecret,
     });
-    return null
-
+    return null;
   }
 
-  async register(
-    body: registerDTO,
-  ): Promise<null> {
+  async register(body: registerDTO): Promise<null> {
     this.logger.log(`Register service hit`);
     const { password } = body;
 
@@ -145,7 +147,6 @@ export class AuthService {
       ttl: this.config.get().cacheExpiresDurationInMinutes * 60,
     });
 
-
     // Clear cookie
     response.clearCookie('api-auth');
 
@@ -167,8 +168,7 @@ export class AuthService {
     return token;
   }
 
-  async tokenRefresh(user: any,
-    response: Response): Promise<any> {
+  async tokenRefresh(user: any, response: Response): Promise<any> {
     this.logger.log('Hits tokenRefresh() hit');
 
     //generate jwt token for the employee
@@ -201,7 +201,10 @@ export class AuthService {
       secure: false,
       httpOnly: true,
       expires: new Date(
-        Number(new Date()) + Number(this.config.get().tokenExpiresDurationInMinutesForUser) * 60 * 1000,
+        Number(new Date()) +
+          Number(this.config.get().tokenExpiresDurationInMinutesForUser) *
+            60 *
+            1000,
       ),
       signed: true,
       // secret: this.config.get().cookieSecret,
@@ -211,22 +214,25 @@ export class AuthService {
       secure: false,
       httpOnly: true,
       expires: new Date(
-        Number(new Date()) + Number(this.config.get().refreshExpiresDurationInYears) * 365 * 24 * 60 * 60 * 1000,
+        Number(new Date()) +
+          Number(this.config.get().refreshExpiresDurationInYears) *
+            365 *
+            24 *
+            60 *
+            60 *
+            1000,
       ),
       signed: true,
       // secret: this.config.get().cookieSecret,
     });
-    return null
-
+    return null;
   }
 
-  async validateUserToken(
-    token: string,
-    payload: IUserToken,
-  ): Promise<any> {
+  async validateUserToken(token: string, payload: IUserToken): Promise<any> {
     this.logger.log('Hits validateUserToken hit');
 
-    return await this.usersService.getUserForLogin(payload.email)
+    return await this.usersService
+      .getUserForLogin(payload.email)
       .then(async (clientData) => {
         if (!clientData) throw new UnauthorizedException('Invalid token');
         const redisUser = await this.cacheManager.get<{ name: string }>(

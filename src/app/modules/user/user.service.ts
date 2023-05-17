@@ -1,4 +1,9 @@
-import { Injectable, BadRequestException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserSchema } from './schema';
@@ -10,35 +15,26 @@ export class UsersService {
   constructor(
     @InjectRepository(UserSchema)
     private usersRepository: Repository<UserSchema>,
-  ) { }
-
+  ) {}
 
   // get user for login
   async getUserForLogin(userNameOrEmail: string): Promise<any> {
     return await this.usersRepository.findOne({
-      where: [
-        { userName: userNameOrEmail },
-        { email: userNameOrEmail },
-      ],
+      where: [{ userName: userNameOrEmail }, { email: userNameOrEmail }],
     });
   }
 
   // get user
   async getUser(userNameOrEmail: string): Promise<any> {
     const user = await this.usersRepository.findOne({
-      where: [
-        { userName: userNameOrEmail },
-        { email: userNameOrEmail },
-      ],
-      select: ["id", "firstName", "lastName", "email", "userName", "role"], // Specify the columns to include in the result
-
+      where: [{ userName: userNameOrEmail }, { email: userNameOrEmail }],
+      select: ['id', 'firstName', 'lastName', 'email', 'userName', 'role'], // Specify the columns to include in the result
     });
 
     //check if user exists
-    if (!user)
-      throw new NotFoundException(responseEnum.INVALID_CREDENTIAL);
+    if (!user) throw new NotFoundException(responseEnum.INVALID_CREDENTIAL);
 
-    return user
+    return user;
   }
 
   // create user
@@ -57,7 +53,7 @@ export class UsersService {
       }
 
       // Rethrow the error if it's not a duplicate entry error
-      throw new InternalServerErrorException()
+      throw new InternalServerErrorException();
     }
   }
 

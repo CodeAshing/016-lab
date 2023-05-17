@@ -1,18 +1,32 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, HttpCode, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  Put,
+  HttpCode,
+  UseGuards,
+} from '@nestjs/common';
 import { UsersService } from './user.service';
-import { ApiBearerAuth, ApiResponse, ApiTags, ApiCookieAuth } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiResponse,
+  ApiTags,
+  ApiCookieAuth,
+} from '@nestjs/swagger';
 import { UserSchema } from './schema';
 import { responseEnum } from './enum';
 import { GetUser, ResponseMessage } from 'src/app/common/decorator';
 import { JwtGuard } from 'src/app/auth/guard';
-
 
 @Controller('user')
 @ApiTags('user')
 @ApiCookieAuth()
 @UseGuards(JwtGuard)
 export class UsersController {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(private readonly usersService: UsersService) {}
 
   // get user
   @ResponseMessage(responseEnum.GET_USER)
@@ -23,7 +37,7 @@ export class UsersController {
   @Get()
   @HttpCode(200)
   async getUser(@GetUser() userData: any): Promise<any> {
-    return userData
+    return userData;
   }
 
   // //get one user
@@ -78,7 +92,6 @@ export class UsersController {
   //   return this.usersService.delete(id);
   // }
 }
-
 
 // import { Client, Employers } from './schema';
 // import {

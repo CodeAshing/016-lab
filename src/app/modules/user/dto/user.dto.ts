@@ -12,4 +12,3 @@ export class authoritySaleDetailsDTO {
   @IsNotEmpty()
   token: string;
 }
-

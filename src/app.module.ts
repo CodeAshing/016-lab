@@ -1,31 +1,21 @@
 import { DatabaseModule } from 'src/database/database.module';
-import {
-  CacheModule,
-  MiddlewareConsumer,
-  Module,
-} from '@nestjs/common';
+import { CacheModule, MiddlewareConsumer, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ScheduleModule } from '@nestjs/schedule';
 
-
 //--- imports ---
 
-    // AuthModule,
-    // UsersModule,
-    // PostModule,
+// AuthModule,
+// UsersModule,
+// PostModule,
 
 //--- modules ---
-import {
-  UsersModule,
-  PostModule,
-} from './app/modules';
+import { UsersModule, PostModule } from './app/modules';
 import { AuthModule } from './app/auth/auth.module';
 
 import { ConfigModule } from './config/config.module';
 import { LoggerModule } from './logger/logger.module';
-
-
 
 @Module({
   imports: [
@@ -44,4 +34,4 @@ import { LoggerModule } from './logger/logger.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

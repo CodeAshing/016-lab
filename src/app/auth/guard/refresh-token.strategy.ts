@@ -24,7 +24,8 @@ export class RefreshTokenStrategy extends PassportStrategy(
     private authService: AuthService,
   ) {
     super({
-      jwtFromRequest: (request: any) => request?.signedCookies[TokenEnum.REFRESH],
+      jwtFromRequest: (request: any) =>
+        request?.signedCookies[TokenEnum.REFRESH],
       ignoreExpiration: false,
       maxAge: '7d',
       passReqToCallback: true,
@@ -59,15 +60,10 @@ export class RefreshTokenStrategy extends PassportStrategy(
       });
     };
 
-    const data = await this.authService.validateUserToken(
-      token,
-      payload,
-    );
+    const data = await this.authService.validateUserToken(token, payload);
     if (!data) throw new UnauthorizedException(responseEnum.NOT_AUTHORIZED);
 
     await addToCache(payload.employeeCode, token);
-    return data
-
-
+    return data;
   }
 }

@@ -41,11 +41,16 @@ export class ConfigService {
         Number(env.REFRESH_EXPIRES_DURATION_IN_YEARS) ||
         DEFAULT_CONFIG.refreshExpiresDurationInYears,
       o16LabsDatabase: env.O16_LABS_DB || DEFAULT_CONFIG.o16LabsDatabase,
-      o16LabsDatabaseType: env.O16_LABS_DB_TYPE || DEFAULT_CONFIG.o16LabsDatabaseType,
-      o16LabsDatabaseHost: env.O16_LABS_DB_HOST || DEFAULT_CONFIG.o16LabsDatabaseHost,
-      o16LabsDatabaseUsername: env.O16_LABS_DB_USERNAME || DEFAULT_CONFIG.o16LabsDatabaseUsername,
-      o16LabsDatabasePassword: env.O16_LABS_DB_PASSWORD || DEFAULT_CONFIG.o16LabsDatabasePassword,
-      o16LabsDatabasePort: Number(env.O16_LABS_DB_PORT) || DEFAULT_CONFIG.o16LabsDatabasePort,
+      o16LabsDatabaseType:
+        env.O16_LABS_DB_TYPE || DEFAULT_CONFIG.o16LabsDatabaseType,
+      o16LabsDatabaseHost:
+        env.O16_LABS_DB_HOST || DEFAULT_CONFIG.o16LabsDatabaseHost,
+      o16LabsDatabaseUsername:
+        env.O16_LABS_DB_USERNAME || DEFAULT_CONFIG.o16LabsDatabaseUsername,
+      o16LabsDatabasePassword:
+        env.O16_LABS_DB_PASSWORD || DEFAULT_CONFIG.o16LabsDatabasePassword,
+      o16LabsDatabasePort:
+        Number(env.O16_LABS_DB_PORT) || DEFAULT_CONFIG.o16LabsDatabasePort,
     };
   }
   public get(): Readonly<ConfigData> {

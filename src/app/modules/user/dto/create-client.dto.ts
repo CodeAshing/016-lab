@@ -1,7 +1,4 @@
-import {
-  IsEmail,
-  IsNotEmpty,
-} from '@nestjs/class-validator';
+import { IsEmail, IsNotEmpty } from '@nestjs/class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateClientDTO {
@@ -57,5 +54,4 @@ export class CreateClientDTO {
   @IsNotEmpty({ message: 'Please provide valid country' })
   @ApiProperty({ example: 'Sindh' })
   state: string;
-
 }

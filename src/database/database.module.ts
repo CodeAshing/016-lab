@@ -11,7 +11,6 @@ export class DatabaseModule {
     config: ConfigService,
     databaseName: string,
   ): any {
-
     const database = config.get()[databaseName];
     const type = config.get()[databaseName + 'Type'];
     const host = config.get()[databaseName + 'Host'];
@@ -28,9 +27,8 @@ export class DatabaseModule {
       database,
       autoLoadEntities: true,
       synchronize: true, // Set to false in production
-      logging: true, // Set to false in production   
+      logging: true, // Set to false in production
     };
-
   }
   public static forRoot(): DynamicModule {
     return {

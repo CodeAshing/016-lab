@@ -1,4 +1,3 @@
-
 import {
   ConflictException,
   HttpException,
@@ -14,8 +13,7 @@ const helper = new Helper();
 
 @Injectable()
 export class PostService {
-  constructor(
-  ) { }
+  constructor() {}
 
   // async getPostUnit({ unit_id }: getPostUnitDTO): Promise<any> {
   //   const { Posters, employees_id } = await Promise.all([
@@ -177,5 +175,4 @@ export class PostService {
 
   //   return null;
   // }
-
 }

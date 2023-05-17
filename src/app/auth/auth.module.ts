@@ -7,18 +7,10 @@ import { ConfigModule } from 'src/config/config.module';
 
 import { Helper } from 'src/app/common/helper/utilities.helper';
 import { JwtModule } from '@nestjs/jwt';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { AuthEntity } from './schema ';
 import { UsersModule } from '../modules';
 
-
 @Module({
-  imports: [
-    ConfigModule,
-    UsersModule,
-    JwtModule.register({}),
-    TypeOrmModule.forFeature([AuthEntity])
-  ],
+  imports: [ConfigModule, UsersModule, JwtModule.register({})],
   controllers: [AuthController],
   providers: [AuthService, RefreshTokenStrategy, JwtStrategy, Helper],
   exports: [AuthService],

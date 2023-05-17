@@ -1,7 +1,4 @@
-import {
-  Controller,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PostService } from './post.service';
 import { responseEnum } from './enum';
@@ -13,7 +10,7 @@ import { JwtGuard } from 'src/app/auth/guard';
 @Controller('Post')
 @ApiTags('Post')
 export class PostController {
-  constructor(private readonly PostService: PostService) { }
+  constructor(private readonly PostService: PostService) {}
 
   // @Post('unPost-unit')
   // @ResponseMessage(responseEnum.UN_Post_UNIT_SUCCESS)

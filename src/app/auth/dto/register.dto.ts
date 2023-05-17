@@ -1,9 +1,17 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsEmail, IsString, Validate, ValidationArguments, ValidatorConstraint, ValidatorConstraintInterface } from '@nestjs/class-validator';
+import {
+  IsNotEmpty,
+  IsOptional,
+  IsEmail,
+  IsString,
+  Validate,
+  ValidationArguments,
+  ValidatorConstraint,
+  ValidatorConstraintInterface,
+} from '@nestjs/class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { RoleEnum } from 'src/app/common/enum';
-
 
 @ValidatorConstraint({ name: 'validRole', async: false })
 class ValidRoleConstraint implements ValidatorConstraintInterface {
@@ -41,7 +49,11 @@ export class registerDTO {
   @IsNotEmpty()
   @Transform(({ value }) => value && value.toLowerCase().trim())
   @Validate(ValidRoleConstraint)
-  @ApiProperty({ description: 'role', example: RoleEnum.ADMIN, enum: [RoleEnum.ADMIN, RoleEnum.USER] })
+  @ApiProperty({
+    description: 'role',
+    example: RoleEnum.ADMIN,
+    enum: [RoleEnum.ADMIN, RoleEnum.USER],
+  })
   role: string;
 
   @IsString()
