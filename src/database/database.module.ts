@@ -10,17 +10,27 @@ export class DatabaseModule {
   public static getNoSqlConnectionOptions(
     config: ConfigService,
     databaseName: string,
-  ): TypeOrmModuleOptions {
-    const databaseURI = config.get()[databaseName];
-    const type = config.get().databaseType;
+  ): any {
 
-    if (!databaseURI) {
-      throw new DbConfigError('Database config is missing');
-    }
+    const database = config.get()[databaseName];
+    const type = config.get()[databaseName + 'Type'];
+    const host = config.get()[databaseName + 'Host'];
+    const port = config.get()[databaseName + 'Port'];
+    const username = config.get()[databaseName + 'Username'];
+    const password = config.get()[databaseName + 'Password'];
+
     return {
-      uri: databaseURI,
-      type
+      type,
+      host,
+      port,
+      username,
+      password,
+      database,
+      autoLoadEntities: true,
+      synchronize: true, // Set to false in production
+      logging: true, // Set to false in production   
     };
+
   }
   public static forRoot(): DynamicModule {
     return {
@@ -31,10 +41,9 @@ export class DatabaseModule {
           useFactory: (configService: ConfigService) =>
             DatabaseModule.getNoSqlConnectionOptions(
               configService,
-              databaseURIEnum.O16_LABS_DATABASE_URI,
+              databaseURIEnum.O16_LABS_DATABASE,
             ),
-          autoLoadEntities: true,
-          synchronize: true
+          inject: [ConfigService],
         }),
       ],
       controllers: [],

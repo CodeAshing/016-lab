@@ -1,3 +1,4 @@
+import { UsersService } from './../modules/user/user.service';
 import { RoleEnum } from '../common/enum';
 import {
   CACHE_MANAGER,
@@ -7,8 +8,6 @@ import {
   Logger,
   UnauthorizedException,
 } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
 import * as moment from 'moment-timezone';
 moment.tz.setDefault('Asia/Karachi');
 
@@ -16,19 +15,14 @@ import { Response, Request } from 'express';
 
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from 'src/config/config.service';
-import { IClientToken } from './interface';
+import { IUserToken } from './interface';
 
-import { loginDTO } from './dto';
+import { loginDTO, registerDTO } from './dto';
 import { Cache } from 'cache-manager';
 
 import { Helper } from 'src/app/common/helper/utilities.helper';
-import { responseEnum } from './enum';
-import {
-  Auth,
-  AuthDocument,
-  Client,
-  ClientDocument,
-} from '../modules/user/schema';
+import { TokenEnum, responseEnum } from './enum';
+
 const helper = new Helper();
 @Injectable()
 export class AuthService {
@@ -39,75 +33,45 @@ export class AuthService {
     private config: ConfigService,
     private jwt: JwtService,
 
-    @Inject(CACHE_MANAGER) private cacheManager: Cache,
-
-    @InjectModel(Client.name, connectionEnum.ERP)
-    private readonly clientModel: Model<ClientDocument>,
-
-
-    @InjectRepository(UserEntity)
-    private userRepository: Repository<UserEntity>
+    private readonly usersService: UsersService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache
   ) { }
 
   async login(
     response: Response,
     payload: loginDTO,
-  ): Promise<any> {
-    this.logger.log('Hits 'ogin() Method');
-    const { username, password } = payload;
+  ): Promise<null> {
+    this.logger.log('Hits login service');
+    const { userNameOrEmail, password } = payload;
 
-    //filter results
-    const auth = await this.authModel.findOne({
-      empCode: username,
-    });
-    const employeeData = await this.employeeModel
-      .findOne({
-        empCode: username,
-      })
-      .populate([{ path: 'region', model: this.regionModel }]);
+    const user = await this.usersService.getUserForLogin(userNameOrEmail);
 
-    //check if employee exists
-    if (!employeeData)
-      throw new ForbiddenException(responseEnum.INVALID_CREDENTIAL);
+    //check if user exists
+    if (!user)
+      throw new UnauthorizedException(responseEnum.INVALID_CREDENTIAL);
 
-    const isMatched = await this.helper.comparePassword(password, auth.pin);
+    const isMatched = await this.helper.compareHash(password, user.password);
 
     if (!isMatched)
-      throw new ForbiddenException(responseEnum.INVALID_CREDENTIAL);
-
-    //get perfect date formats for log
-    const momentLogDate = moment().utc().add(5, 'hours'),
-      logDay = momentLogDate.format('DD'),
-      logMonth = momentLogDate.format('MM'),
-      logYear = momentLogDate.format('YYYY'),
-      logTime = momentLogDate.format('hh:mm A'),
-      logDate = momentLogDate.format('DD-MM-YYYY'),
-      logMessage = {};
-
-    //assign values to notification object
-    logMessage['type'] = 'Login';
-    logMessage['time'] = logTime;
-    logMessage['empnotificatione'] = employeeData.name;
-    logMessage['region'] = employeeData.region;
-    logMessage['date'] = logDate;
+      throw new UnauthorizedException(responseEnum.INVALID_CREDENTIAL);
 
     //generate jwt token for the employee
     const accessTokenPayload = {
-      user: RoleEnum.EMPLOYEE,
-      employeeCode: username,
+      role: user.role,
+      email: user.email,
       type: 'access',
     };
 
     const accessToken = await this.signToken(
       accessTokenPayload,
-      this.config.get().tokenExpiresDurationInMinutesForEmployee + 'm',
+      this.config.get().tokenExpiresDurationInMinutesForUser + 'm',
       this.config.get().jwtSecret,
     );
 
     //generate refresh token for the employee
     const refreshTokenPayload = {
-      user: RoleEnum.EMPLOYEE,
-      employeeCode: username,
+      role: user.role,
+      email: user.email,
       type: 'refresh',
     };
 
@@ -117,113 +81,113 @@ export class AuthService {
       this.config.get().refreshSecret,
     );
 
-    // Add log to log collection
-    // await Promise.all([
-    //   this.notificationAndSupportModel.updateOne(
-    //     { recordType: 'jwtTokens' },
-    //     { $set: { [`jwtTokens.${username}.web`]: token.slice(-20) } },
-    //     { upsert: true },
-    //   ),
-    //   this.notificationAndSupportModel.updateOne(
-    //     { recordType: 'logs' },
-    //     {
-    //       $push: {
-    //         [`webLogin.${logYear}.${logMonth}.${logDay}`]: logMessage,
-    //       },
-    //     },
-    //     { upsert: true },
-    //   ),
-    // ]);
+    this.logger.log(`User: ${userNameOrEmail} logged in successfully`);
 
-    this.logger.log(`Employee ${username} logged in successfully`);
+    response.cookie(TokenEnum.ACCESS, accessToken, {
+      secure: false,
+      httpOnly: true,
+      expires: new Date(
+        Number(new Date()) + Number(this.config.get().tokenExpiresDurationInMinutesForUser) * 60 * 1000,
+      ),
+      signed: true,
+      // secret: this.config.get().cookieSecret,
+    });
 
-    // response.cookie('api-auth', token, {
-    //   secure: false,
-    //   httpOnly: true,
-    //   expires: new Date(
-    //     Number(new Date()) + Number(expiresInMinutes) * 60 * 1000,
-    //   ),
-    //   signed: true,
-    // });
+    response.cookie(TokenEnum.REFRESH, refreshToken, {
+      secure: false,
+      httpOnly: true,
+      expires: new Date(
+        Number(new Date()) + Number(this.config.get().refreshExpiresDurationInYears) * 365 * 24 * 60 * 60 * 1000,
+      ),
+      signed: true,
+      // secret: this.config.get().cookieSecret,
+    });
+    return null
 
-    return {
-      accessToken,
-      refreshToken,
-    };
-    //remove above line and uncomment below line
-    // return { accessToken: token };
+  }
+
+  async register(
+    body: registerDTO,
+  ): Promise<null> {
+    this.logger.log(`Register service hit`);
+    const { password } = body;
+
+    const hash = await this.helper.generateHash(password);
+
+    await this.usersService.create({ ...body, password: hash });
+
+    return null;
   }
 
   async logout(
-    empCode: string,
+    email: string,
     request: Request,
     response: Response,
   ): Promise<any> {
-    const authHeader = request.headers['authorization'];
-    const authToken = authHeader && authHeader.split(' ')[1];
+    const authToken = request?.signedCookies[TokenEnum.ACCESS];
 
     // get data from cache
     const cacheUserRecord = await this.cacheManager.get<{ name: string }>(
-      empCode,
+      email,
     );
 
     let cacheData: any;
     if (cacheUserRecord) {
       cacheData = JSON.parse(cacheUserRecord);
-      cacheData[String(empCode)].push(authToken);
+      cacheData[String(email)].push(authToken);
     } else {
       cacheData = {
-        [empCode]: [authToken],
+        [email]: [authToken],
       };
     }
     // set cache data
-    await this.cacheManager.set(empCode, JSON.stringify(cacheData), {
+    await this.cacheManager.set(email, JSON.stringify(cacheData), {
       ttl: this.config.get().cacheExpiresDurationInMinutes * 60,
     });
 
-    //we are not using cookies for now
-    // Clear cookie
-    // response.clearCookie('api-auth');
 
-    this.logger.log(`Employee ${empCode} logged out successfully`);
+    // Clear cookie
+    response.clearCookie('api-auth');
+
+    this.logger.log(`User ${email} logged out successfully`);
 
     return null;
   }
 
   async signToken(
-    payload: IClientToken,
+    payload: IUserToken,
     expiresIn: string,
     secret: string,
   ): Promise<string> {
     const token = await this.jwt.signAsync(payload, {
       expiresIn: expiresIn,
       secret: secret,
-      issuer: this.config.get().ecoSystemUrl,
     });
 
     return token;
   }
 
-  async tokenRefresh(empCode: string): Promise<any> {
-    this.logger.log('Hits tokenRefresh()');
+  async tokenRefresh(user: any,
+    response: Response): Promise<any> {
+    this.logger.log('Hits tokenRefresh() hit');
 
     //generate jwt token for the employee
     const accessTokenPayload = {
-      user: RoleEnum.EMPLOYEE,
-      employeeCode: empCode,
+      role: user.role,
+      email: user.email,
       type: 'access',
     };
 
     const accessToken = await this.signToken(
       accessTokenPayload,
-      this.config.get().tokenExpiresDurationInMinutesForEmployee + 'm',
+      this.config.get().tokenExpiresDurationInMinutesForUser + 'm',
       this.config.get().jwtSecret,
     );
 
     //generate refresh token for the employee
     const refreshTokenPayload = {
-      user: RoleEnum.EMPLOYEE,
-      employeeCode: empCode,
+      role: user.role,
+      email: user.email,
       type: 'refresh',
     };
 
@@ -233,28 +197,44 @@ export class AuthService {
       this.config.get().refreshSecret,
     );
 
-    return {
-      accessToken,
-      refreshToken,
-    };
+    response.cookie(TokenEnum.ACCESS, accessToken, {
+      secure: false,
+      httpOnly: true,
+      expires: new Date(
+        Number(new Date()) + Number(this.config.get().tokenExpiresDurationInMinutesForUser) * 60 * 1000,
+      ),
+      signed: true,
+      // secret: this.config.get().cookieSecret,
+    });
+
+    response.cookie(TokenEnum.REFRESH, refreshToken, {
+      secure: false,
+      httpOnly: true,
+      expires: new Date(
+        Number(new Date()) + Number(this.config.get().refreshExpiresDurationInYears) * 365 * 24 * 60 * 60 * 1000,
+      ),
+      signed: true,
+      // secret: this.config.get().cookieSecret,
+    });
+    return null
+
   }
 
-  async validateClientToken(
+  async validateUserToken(
     token: string,
-    payload: IClientToken,
+    payload: IUserToken,
   ): Promise<any> {
-    this.logger.log('Hits validateClientToken()');
+    this.logger.log('Hits validateUserToken hit');
 
-    return this.clientModel
-      .findOne({ CNIC: payload.employeeCNIC })
+    return await this.usersService.getUserForLogin(payload.email)
       .then(async (clientData) => {
         if (!clientData) throw new UnauthorizedException('Invalid token');
         const redisUser = await this.cacheManager.get<{ name: string }>(
-          payload.employeeCNIC,
+          payload.email,
         );
         if (redisUser) {
           let parsedUserData = JSON.parse(redisUser);
-          parsedUserData = parsedUserData[payload.employeeCNIC];
+          parsedUserData = parsedUserData[payload.email];
           if (parsedUserData?.includes(token))
             throw new UnauthorizedException('Session expired');
         }

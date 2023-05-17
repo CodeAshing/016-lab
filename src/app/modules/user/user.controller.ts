@@ -1,50 +1,82 @@
-import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common';
-import { UsersService } from './users.service';
-import { User } from './user.entity';
+import { Controller, Get, Post, Body, Param, Delete, Put, HttpCode, UseGuards } from '@nestjs/common';
+import { UsersService } from './user.service';
+import { ApiBearerAuth, ApiResponse, ApiTags, ApiCookieAuth } from '@nestjs/swagger';
+import { UserSchema } from './schema';
+import { responseEnum } from './enum';
+import { GetUser, ResponseMessage } from 'src/app/common/decorator';
+import { JwtGuard } from 'src/app/auth/guard';
 
-@Controller('users')
+
+@Controller('user')
+@ApiTags('user')
+@ApiCookieAuth()
+@UseGuards(JwtGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) { }
 
-  //get all users
+  // get user
+  @ResponseMessage(responseEnum.GET_USER)
+  @ApiResponse({
+    status: 200,
+    description: responseEnum.GET_USER,
+  })
   @Get()
-  async findAll(): Promise<User[]> {
-    return await this.usersService.findall();
+  @HttpCode(200)
+  async getUser(@GetUser() userData: any): Promise<any> {
+    return userData
   }
 
-  //get one user
-  @Get(':id')
-  async findOne(@Param('id') id: number): Promise<User> {
-    const user = await this.usersService.findOne(id);
-    if (!user) {
-      throw new Error('User not found');
-    } else {
-      return user;
-    }
-  }
+  // //get one user
+  // @Get(':id')
+  // @ResponseMessage(responseEnum.GET_ALL_USERS)
+  // async findOne(@Param('id') id: number): Promise<UserSchema> {
+  //   const user = await this.usersService.findOne(id);
+  //   if (!user) {
+  //     throw new Error('User not found');
+  //   } else {
+  //     return user;
+  //   }
+  // }
 
-  //create user
-  @Post()
-  async create(@Body() user: User): Promise<User> {
-    return await this.usersService.create(user);
-  }
+  //get all users
+  // @Get()
+  // async findAll(): Promise<UserSchema[]> {
+  //   return await this.usersService.findall();
+  // }
 
-  //update user
-  @Put(':id')
-  async update(@Param('id') id: number, @Body() user: User): Promise<User> {
-    return this.usersService.update(id, user);
-  }
+  // //get one user
+  // @Get(':id')
+  // async findOne(@Param('id') id: number): Promise<UserSchema> {
+  //   const user = await this.usersService.findOne(id);
+  //   if (!user) {
+  //     throw new Error('User not found');
+  //   } else {
+  //     return user;
+  //   }
+  // }
 
-  //delete user
-  @Delete(':id')
-  async delete(@Param('id') id: number): Promise<void> {
-    //handle the error if user not found
-    const user = await this.usersService.findOne(id);
-    if (!user) {
-      throw new Error('User not found');
-    }
-    return this.usersService.delete(id);
-  }
+  // //create user
+  // @Post()
+  // async create(@Body() user: UserSchema): Promise<UserSchema> {
+  //   return await this.usersService.create(user);
+  // }
+
+  // //update user
+  // @Put(':id')
+  // async update(@Param('id') id: number, @Body() user: UserSchema): Promise<UserSchema> {
+  //   return this.usersService.update(id, user);
+  // }
+
+  // //delete user
+  // @Delete(':id')
+  // async delete(@Param('id') id: number): Promise<void> {
+  //   //handle the error if user not found
+  //   const user = await this.usersService.findOne(id);
+  //   if (!user) {
+  //     throw new Error('User not found');
+  //   }
+  //   return this.usersService.delete(id);
+  // }
 }
 
 

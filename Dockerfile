@@ -1,4 +1,4 @@
-FROM node:alpine
+FROM node:16
 
 # Create app directory
 WORKDIR /app
@@ -6,10 +6,10 @@ WORKDIR /app
 # Install app dependencies
 COPY package*.json ./
 
-RUN npm i --legacy-peer-deps
+RUN npm install --legacy-peer-deps
 
 # Bundle app source
-COPY . /app
+COPY . .
 
 EXPOSE 3000
 

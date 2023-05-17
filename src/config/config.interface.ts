@@ -20,11 +20,15 @@ export interface ConfigData {
 
   /** Database connection details. */
 
-  databaseType: string;
-  o16labsDatabaseURI: string;
+  o16LabsDatabase: string;
+  o16LabsDatabaseType: string;
+  o16LabsDatabaseHost: string;
+  o16LabsDatabaseUsername: string;
+  o16LabsDatabasePassword: string;
+  o16LabsDatabasePort: number;
 
   //* Duration of the token and cookie in  minutes
-  tokenExpiresDurationInMinutesForClient: number;
+  tokenExpiresDurationInMinutesForUser: number;
   cacheExpiresDurationInMinutes: number;
   refreshExpiresDurationInYears: number;
 }

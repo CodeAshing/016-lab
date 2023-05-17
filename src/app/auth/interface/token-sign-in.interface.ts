@@ -1,6 +1,5 @@
-export interface IClientToken {
-  user?: string;
-  employeeCode?: string;
-  employeeCNIC?: string;
+export interface IUserToken {
+  role?: string;
+  email?: string;
   type?: string;
 }

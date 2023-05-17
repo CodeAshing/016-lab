@@ -12,9 +12,9 @@ import {
 import { Response, Request } from 'express';
 import { GetUser, ResponseMessage } from '../common/decorator';
 import { AuthService } from './auth.service';
-import { loginDTO } from './dto';
+import { loginDTO, registerDTO } from './dto';
 import { JwtGuard, RefreshTokenGuard } from './guard';
-import { ApiResponse, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiResponse, ApiTags, ApiCookieAuth, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { responseEnum } from './enum';
 
 @Controller('auth')
@@ -22,11 +22,45 @@ import { responseEnum } from './enum';
 export class AuthController {
   constructor(private readonly authService: AuthService) { }
 
-  @Post('login')
-  @ResponseMessage(responseEnum.EMPLOYEE_WEB_LOGIN)
+  @Post('register')
+  @ResponseMessage(responseEnum.REGISTER_SUCCESSFULLY)
   @ApiResponse({
     status: 200,
-    description: responseEnum.EMPLOYEE_WEB_LOGIN,
+    description: responseEnum.REGISTER_SUCCESSFULLY,
+  })
+  @ApiResponse({
+    status: 400,
+    schema: {
+      anyOf: [
+        {
+          title: 'EMAIL_ALREADY_EXIST',
+          description: responseEnum.EMAIL_ALREADY_EXIST,
+        },
+        {
+          title: 'USERNAME_ALREADY_EXIST',
+          description: responseEnum.USERNAME_ALREADY_EXIST,
+        },
+      ],
+    },
+  })
+  @HttpCode(200)
+  async register(
+    @Body() body: registerDTO,
+  ): Promise<any> {
+    return await this.authService.register(body);
+  }
+
+  @Post('login')
+  @ResponseMessage(responseEnum.LOGIN_SUCCESSFULLY)
+  @ApiResponse({
+    status: 200,
+    description: responseEnum.LOGIN_SUCCESSFULLY,
+  })
+
+  @ApiUnauthorizedResponse({
+
+    status: 401,
+    description: responseEnum.INVALID_CREDENTIAL,
   })
   @HttpCode(200)
   async login(
@@ -45,17 +79,22 @@ export class AuthController {
   })
   @Get('refresh-token')
   @HttpCode(200)
-  async tokenRefresh(@GetUser() userData: any): Promise<any> {
-    return await this.authService.tokenRefresh(userData?.empCode);
+  async tokenRefresh(@GetUser() userData: any, @Res({ passthrough: true }) response: Response): Promise<any> {
+    return await this.authService.tokenRefresh(userData, response);
   }
 
+
   @UseGuards(JwtGuard)
-  @ApiBearerAuth('JWT-auth')
+  @ApiCookieAuth()
   @Get('logout')
-  @ResponseMessage(responseEnum.LOGOUT)
+  @ResponseMessage(responseEnum.LOGOUT_SUCCESSFULLY)
   @ApiResponse({
     status: 200,
-    description: responseEnum.LOGOUT,
+    description: responseEnum.LOGOUT_SUCCESSFULLY,
+  })
+  @ApiResponse({
+    status: 401,
+    description: responseEnum.SESSION_EXPIRED,
   })
   @HttpCode(200)
   async logout(
@@ -63,6 +102,6 @@ export class AuthController {
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response,
   ): Promise<any> {
-    return await this.authService.logout(userData?.empCode, request, response);
+    return await this.authService.logout(userData.email, request, response);
   }
 }

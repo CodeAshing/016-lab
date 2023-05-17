@@ -1,1 +1,1 @@
-export * from './Post.schema';
+export * from './post.schema';

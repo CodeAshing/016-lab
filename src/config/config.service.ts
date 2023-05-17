@@ -24,7 +24,6 @@ export class ConfigService {
   private parseConfigFromEnv(env: NodeJS.ProcessEnv): ConfigData {
     return {
       env: env.NODE_ENV || DEFAULT_CONFIG.env,
-      databaseType: env.DATABASE_TYPE || DEFAULT_CONFIG.databaseType,
       port: Number(env.PORT) || DEFAULT_CONFIG.port,
       logLevel: env.LOG_LEVEL || DEFAULT_CONFIG.logLevel,
       jwtSecret: env.JWT_SECRET || DEFAULT_CONFIG.jwtSecret,
@@ -32,17 +31,21 @@ export class ConfigService {
       cookieSecret: env.COOKIE_SECRET || DEFAULT_CONFIG.cookieSecret,
       transactionSecret:
         env.TRANSACTION_SECRET || DEFAULT_CONFIG.transactionSecret,
-      o16labsDatabaseURI:
-        env.O16_LABS_DATABASE_URL || DEFAULT_CONFIG.o16labsDatabaseURI,
-      tokenExpiresDurationInMinutesForClient:
+      tokenExpiresDurationInMinutesForUser:
         Number(env.TOKEN_EXPIRES_DURATION_IN_MINUTES) ||
-        DEFAULT_CONFIG.tokenExpiresDurationInMinutesForClient,
+        DEFAULT_CONFIG.tokenExpiresDurationInMinutesForUser,
       cacheExpiresDurationInMinutes:
         Number(env.CACHE_EXPIRES_DURATION_IN_MINUTES) ||
         DEFAULT_CONFIG.cacheExpiresDurationInMinutes,
       refreshExpiresDurationInYears:
         Number(env.REFRESH_EXPIRES_DURATION_IN_YEARS) ||
         DEFAULT_CONFIG.refreshExpiresDurationInYears,
+      o16LabsDatabase: env.O16_LABS_DB || DEFAULT_CONFIG.o16LabsDatabase,
+      o16LabsDatabaseType: env.O16_LABS_DB_TYPE || DEFAULT_CONFIG.o16LabsDatabaseType,
+      o16LabsDatabaseHost: env.O16_LABS_DB_HOST || DEFAULT_CONFIG.o16LabsDatabaseHost,
+      o16LabsDatabaseUsername: env.O16_LABS_DB_USERNAME || DEFAULT_CONFIG.o16LabsDatabaseUsername,
+      o16LabsDatabasePassword: env.O16_LABS_DB_PASSWORD || DEFAULT_CONFIG.o16LabsDatabasePassword,
+      o16LabsDatabasePort: Number(env.O16_LABS_DB_PORT) || DEFAULT_CONFIG.o16LabsDatabasePort,
     };
   }
   public get(): Readonly<ConfigData> {

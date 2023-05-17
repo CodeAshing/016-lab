@@ -9,11 +9,13 @@ import { Helper } from 'src/app/common/helper/utilities.helper';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthEntity } from './schema ';
+import { UsersModule } from '../modules';
 
 
 @Module({
   imports: [
     ConfigModule,
+    UsersModule,
     JwtModule.register({}),
     TypeOrmModule.forFeature([AuthEntity])
   ],

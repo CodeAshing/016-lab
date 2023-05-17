@@ -16,12 +16,16 @@ services:
       - TOKEN_EXPIRES_DURATION_IN_MINUTES_FOR_USER=60
       - CACHE_EXPIRES_DURATION_IN_MINUTES=60
       - REFRESH_EXPIRES_DURATION_IN_YEARS=1
-      - DATABASE_TYPE=postgres
-      - O16_LABS_DATABASE_URL=postgres://user:password@postgres:5432/db
+      - O16_LABS_DB=postgres
+      - O16_LABS_DB_TYPE=postgres
+      - O16_LABS_DB_HOST=db
+      - O16_LABS_DB_USERNAME=postgres
+      - O16_LABS_DB_PASSWORD=postgres
+      - O16_LABS_DB_PORT=5432
     depends_on:
       - db
     volumes:
-      - .:/app
+      - ./src:/app/src
   db:
     container_name: db
     image: postgres:12
