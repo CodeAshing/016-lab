@@ -1,10 +1,10 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 
 import { InjectRepository } from '@nestjs/typeorm';
-import { PostSchema } from './schema';
 import { Repository } from 'typeorm';
-import { responseEnum } from './enum';
 import { postDTO } from './dto';
+import { responseEnum } from './enum';
+import { PostSchema } from './schema';
 
 @Injectable()
 export class PostService {

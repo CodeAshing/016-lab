@@ -1,26 +1,25 @@
 import {
+  Body,
   Controller,
-  UseGuards,
+  Delete,
   Get,
   Param,
   Post,
-  Body,
   Put,
-  Delete,
+  UseGuards,
 } from '@nestjs/common';
 import {
-  ApiBearerAuth,
   ApiCookieAuth,
   ApiResponse,
-  ApiTags,
+  ApiTags
 } from '@nestjs/swagger';
-import { PostService } from './post.service';
-import { responseEnum } from './enum';
-import { GetUser, ResponseMessage, Roles } from 'src/app/common/decorator';
 import { JwtGuard, RolesGuard } from 'src/app/auth/guard';
-import { PostSchema } from './schema';
-import { postDTO } from './dto';
+import { ResponseMessage, Roles } from 'src/app/common/decorator';
 import { RoleEnum } from 'src/app/common/enum';
+import { postDTO } from './dto';
+import { responseEnum } from './enum';
+import { PostService } from './post.service';
+import { PostSchema } from './schema';
 
 @UseGuards(JwtGuard)
 @Controller('Post')

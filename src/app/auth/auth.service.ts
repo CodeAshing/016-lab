@@ -1,24 +1,20 @@
-import { UsersService } from './../modules/user/user.service';
-import { RoleEnum } from '../common/enum';
 import {
   CACHE_MANAGER,
-  ForbiddenException,
   Inject,
   Injectable,
   Logger,
-  UnauthorizedException,
+  UnauthorizedException
 } from '@nestjs/common';
-import * as moment from 'moment-timezone';
-moment.tz.setDefault('Asia/Karachi');
+import { UsersService } from './../modules/user/user.service';
 
-import { Response, Request } from 'express';
+import { Request, Response } from 'express';
 
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from 'src/config/config.service';
 import { IUserToken } from './interface';
 
-import { loginDTO, registerDTO } from './dto';
 import { Cache } from 'cache-manager';
+import { loginDTO, registerDTO } from './dto';
 
 import { Helper } from 'src/app/common/helper/utilities.helper';
 import { TokenEnum, responseEnum } from './enum';

@@ -19,7 +19,7 @@ import { UsersService } from './user.service';
 @ApiCookieAuth()
 @UseGuards(JwtGuard)
 export class UsersController {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(private readonly usersService: UsersService) {}
 
   // get user
   @ResponseMessage(responseEnum.GET_USER)

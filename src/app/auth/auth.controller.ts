@@ -2,26 +2,25 @@ import {
   Body,
   Controller,
   Get,
-  Req,
-  Post,
-  Res,
   HttpCode,
+  Post,
+  Req,
+  Res,
   UseGuards,
 } from '@nestjs/common';
-// import { FileInterceptor } from '@nestjs/platform-express';
-import { Response, Request } from 'express';
+import {
+  ApiBody,
+  ApiCookieAuth,
+  ApiResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
+import { Request, Response } from 'express';
 import { GetUser, ResponseMessage } from '../common/decorator';
 import { AuthService } from './auth.service';
 import { loginDTO, registerDTO } from './dto';
-import { JwtGuard, RefreshTokenGuard } from './guard';
-import {
-  ApiResponse,
-  ApiTags,
-  ApiCookieAuth,
-  ApiUnauthorizedResponse,
-  ApiBody,
-} from '@nestjs/swagger';
 import { responseEnum } from './enum';
+import { JwtGuard, RefreshTokenGuard } from './guard';
 
 @Controller('auth')
 @ApiTags('auth')
