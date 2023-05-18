@@ -1,77 +1,86 @@
-import { Controller, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  Controller,
+  UseGuards,
+  Get,
+  Param,
+  Post,
+  Body,
+  Put,
+  Delete,
+} from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiCookieAuth,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { PostService } from './post.service';
 import { responseEnum } from './enum';
 import { GetUser, ResponseMessage } from 'src/app/common/decorator';
 import { JwtGuard } from 'src/app/auth/guard';
+import { PostSchema } from './schema';
 
 @UseGuards(JwtGuard)
-@ApiBearerAuth('JWT-auth')
 @Controller('Post')
 @ApiTags('Post')
+@ApiCookieAuth()
 export class PostController {
-  constructor(private readonly PostService: PostService) {}
+  constructor(private readonly postService: PostService) {}
 
-  // @Post('unPost-unit')
-  // @ResponseMessage(responseEnum.UN_Post_UNIT_SUCCESS)
-  // @ApiResponse({
-  //   status: 200,
-  //   description: responseEnum.UN_Post_UNIT_SUCCESS,
-  // })
-  // @UsePipes(ValidationPipe)
-  // @HttpCode(200)
-  // async unPostUnit(
-  //   @Body() body: UnPostDTO,
-  //   @GetUser() userData: any,
-  // ): Promise<any> {
-  //   console.log('aa');
-  //   return await this.PostService.unPostUnit(body, userData);
-  // }
+  @ResponseMessage(responseEnum.GET_ALL_POSTS)
+  @Get()
+  @ApiResponse({ status: 200, description: responseEnum.GET_ALL_POSTS })
+  @ApiResponse({ status: 404, description: responseEnum.POST_NOT_FOUND })
+  async findAll(): Promise<PostSchema[]> {
+    return this.postService.findAll();
+  }
 
-  // @Post('get-Poster-details')
-  // @ResponseMessage(responseEnum.UNIT_SET_TO_Post)
-  // @ApiResponse({
-  //   status: 200,
-  //   description: responseEnum.UNIT_SET_TO_Post,
-  // })
-  // @UsePipes(ValidationPipe)
-  // @HttpCode(200)
-  // async getPostUnit(@Body() body: getPostUnitDTO): Promise<any> {
-  //   return await this.PostService.getPostUnit(body);
-  // }
+  @ResponseMessage(responseEnum.GET_SINGLE_POST)
+  @Get(':id')
+  @ApiResponse({ status: 200, description: responseEnum.GET_SINGLE_POST })
+  @ApiResponse({ status: 404, description: responseEnum.POST_NOT_FOUND })
+  async findOne(@Param('id') id: number): Promise<PostSchema> {
+    return this.postService.findOne(id);
+  }
 
-  // @Post('Post-unit')
-  // @ResponseMessage(responseEnum.UNIT_Post_SUCCESS)
-  // @ApiResponse({
-  //   status: 200,
-  //   description: responseEnum.UNIT_Post_SUCCESS,
-  // })
-  // @UsePipes(ValidationPipe)
-  // @HttpCode(200)
-  // async PostUnit(
-  //   @GetUser() userData: any,
-  //   @Body() body: PostDTO,
-  // ): Promise<any> {
-  //   return await this.PostService.PostUnit(body, userData);
-  // }
+  @Post()
+  // @Roles('admin')
+  @ResponseMessage(responseEnum.POST_UPLOADED_SUCCESSFULLY)
+  // @UseGuards(AuthGuard(), RolesGuard)
+  @ApiResponse({
+    status: 201,
+    description: responseEnum.POST_UPLOADED_SUCCESSFULLY,
+  })
+  async create(@Body() post: PostSchema): Promise<null> {
+    return this.postService.create(post);
+  }
 
-  // @Post('in-progress')
-  // @ResponseMessage(responseEnum.UNIT_IS_SET_TO_INPROGRESS)
-  // @ApiResponse({
-  //   status: 200,
-  //   description: responseEnum.UNIT_IS_SET_TO_INPROGRESS,
-  // })
-  // @UsePipes(ValidationPipe)
-  // @HttpCode(200)
-  // async inProgress(
-  //   @GetUser() userData: any,
-  //   @Body() body: InProgressDTO,
-  // ): Promise<any> {
-  //   return await this.PostService.inProgress(
-  //     body.unit_id,
-  //     body.inProgressFor,
-  //     body.validity,
-  //     userData,
-  //   );
-  // }
+  @Put(':id')
+  // @Roles('admin')
+  @ResponseMessage(responseEnum.POST_UPDATED_SUCCESSFULLY)
+  // @UseGuards(AuthGuard(), RolesGuard)
+  @ApiResponse({
+    status: 200,
+    description: responseEnum.POST_UPDATED_SUCCESSFULLY,
+  })
+  @ApiResponse({ status: 404, description: responseEnum.POST_NOT_FOUND })
+  async update(
+    @Param('id') id: number,
+    @Body() post: PostSchema,
+  ): Promise<null> {
+    return this.postService.update(id, post);
+  }
+
+  @Delete(':id')
+  // @Roles('admin')
+  // @UseGuards(AuthGuard(), RolesGuard)
+  @ResponseMessage(responseEnum.POST_DELETED_SUCCESSFULLY)
+  @ApiResponse({
+    status: 204,
+    description: responseEnum.POST_DELETED_SUCCESSFULLY,
+  })
+  @ApiResponse({ status: 404, description: responseEnum.POST_NOT_FOUND })
+  async remove(@Param('id') id: number): Promise<null> {
+    return this.postService.remove(id);
+  }
 }

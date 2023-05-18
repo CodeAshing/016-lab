@@ -19,6 +19,7 @@ import {
   ApiTags,
   ApiCookieAuth,
   ApiUnauthorizedResponse,
+  ApiBody,
 } from '@nestjs/swagger';
 import { responseEnum } from './enum';
 
@@ -63,6 +64,7 @@ export class AuthController {
     status: 401,
     description: responseEnum.INVALID_CREDENTIAL,
   })
+  @ApiBody({ type: loginDTO, description: 'The data for login' })
   @HttpCode(200)
   async login(
     @Res({ passthrough: true }) response: Response,

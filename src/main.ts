@@ -16,6 +16,7 @@ import {
   LoggingInterceptor,
   TransformInterceptor,
 } from './app/common/interceptors';
+import { createDocument } from './swagger/swagger';
 
 const logger = new Logger('main');
 (async () => {
@@ -62,16 +63,7 @@ const logger = new Logger('main');
 
   const configService = app.get(ConfigService);
 
-  const config = new DocumentBuilder()
-    .setTitle('016 Lab APIs')
-    .setDescription('016 Lab Application as a task')
-    .setVersion('v1')
-    // .addTag('Development')
-    .build();
-
-  const document = SwaggerModule.createDocument(app, config);
-
-  SwaggerModule.setup('/v1/swagger', app, document);
+  SwaggerModule.setup('/v1/swagger', app, createDocument(app));
 
   app.use(cookieParser(configService.get().cookieSecret));
   await app.listen(process.env.PORT || configService.get().port);

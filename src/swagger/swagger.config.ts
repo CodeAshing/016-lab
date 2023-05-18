@@ -5,8 +5,8 @@ import { SwaggerConfig } from './swagger.interface';
  * Change this to suit your app!
  */
 export const SWAGGER_CONFIG: SwaggerConfig = {
-  title: 'Star ERP',
-  description: 'Template',
-  version: '1.0',
-  tags: ['Template'],
+  title: '016 Lab APIs',
+  description: '016 Lab Application as a task',
+  version: 'v1',
+  tags: ['Development'],
 };
